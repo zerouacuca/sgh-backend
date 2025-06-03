@@ -1,0 +1,22 @@
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Java (Spring Boot)
+target/
+*.jar
+*.war
+*.log
+
+# IDEs e editores
+.vscode/
+.idea/
+*.iml
+
+# Docker
+**/.env
+**/docker-compose.override.yml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

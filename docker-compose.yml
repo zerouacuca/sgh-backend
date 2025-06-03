@@ -1,0 +1,86 @@
+services:
+
+  # === API Gateway ===
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - USER_SERVICE_URL=http://user-service:8082
+      - JWT_SECRET=secreto123
+    depends_on:
+      - auth-service
+      - user-service
+    networks:
+      - backend
+
+  # === Auth Service ===
+  auth-service:
+    build:
+      context: ./auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - auth-db
+    networks:
+      - backend
+
+  # === Banco de dados do Auth ===
+  auth-db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # === User Service ===
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/sgh-users
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - user-db
+    networks:
+      - backend
+
+  # === Banco de dados do User Service ===
+  user-db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: sgh-users
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  auth_data:
+  user_data:
+
+networks:
+  backend:
+    driver: bridge

@@ -1,8 +1,11 @@
-package com.example.userservice.model;
+package com.example.user_service.model;
 
 import jakarta.persistence.*;
 import java.util.List;
 
+import lombok.Data;
+
+@Data
 @Entity
 public class Paciente {
 

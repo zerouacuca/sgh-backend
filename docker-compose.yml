@@ -54,16 +54,16 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/sgh-users
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://sgh-users:5432/sgh-users
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
     depends_on:
-      - user-db
+      - sgh-users
     networks:
       - backend
 
   # === Banco de dados do User Service ===
-  user-db:
+  sgh-users:
     image: postgres:17
     restart: always
     environment:

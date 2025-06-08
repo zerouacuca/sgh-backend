@@ -1,8 +1,9 @@
-package com.example.userservice.controller;
+package com.example.user_service.controller;
 
-import com.example.userservice.model.Paciente;
-import com.example.userservice.model.TransacaoPontos;
-import com.example.userservice.service.PacienteService;
+import com.example.user_service.dto.PacienteDTO;
+import com.example.user_service.dto.TransacaoPontosDTO;
+import com.example.user_service.model.Paciente;
+import com.example.user_service.service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class PacienteController {
 
     // [GET] /users
     @GetMapping
-    public ResponseEntity<List<Paciente>> listarPacientes() {
+    public ResponseEntity<List<PacienteDTO>> listarPacientes() {
         return ResponseEntity.ok(pacienteService.listarPacientes());
     }
 
@@ -47,7 +48,7 @@ public class PacienteController {
 
     // [GET] /users/{id}/transacoes
     @GetMapping("/{id}/transacoes")
-    public ResponseEntity<List<TransacaoPontos>> extrato(@PathVariable Long id) {
+    public ResponseEntity<List<TransacaoPontosDTO>> extrato(@PathVariable Long id) {
         return ResponseEntity.ok(pacienteService.listarTransacoes(id));
     }
 }

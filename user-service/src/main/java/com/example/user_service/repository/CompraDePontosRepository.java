@@ -1,6 +1,6 @@
-package com.example.userservice.repository;
+package com.example.user_service.repository;
 
-import com.example.userservice.model.CompraDePontos;
+import com.example.user_service.model.CompraDePontos;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,13 +1,16 @@
-package com.example.userservice.service;
+package com.example.user_service.service;
 
-import com.example.userservice.model.*;
-import com.example.userservice.repository.*;
+import com.example.user_service.dto.PacienteDTO;
+import com.example.user_service.dto.TransacaoPontosDTO;
+import com.example.user_service.model.*;
+import com.example.user_service.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PacienteService {
@@ -21,8 +24,11 @@ public class PacienteService {
     @Autowired
     private TransacaoPontosRepository transacaoRepository;
 
-    public List<Paciente> listarPacientes() {
-        return pacienteRepository.findAll();
+    public List<PacienteDTO> listarPacientes() {
+        return pacienteRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Paciente salvarPaciente(Paciente paciente) {
@@ -67,7 +73,34 @@ public class PacienteService {
         return paciente.getSaldoPontos();
     }
 
-    public List<TransacaoPontos> listarTransacoes(Long pacienteId) {
-        return transacaoRepository.findByPacienteIdOrderByDataDesc(pacienteId);
+    public List<TransacaoPontosDTO> listarTransacoes(Long pacienteId) {
+        return transacaoRepository.findByPacienteIdOrderByDataDesc(pacienteId)
+                .stream()
+                .map(this::toTransacaoDTO)
+                .collect(Collectors.toList());
+    }
+
+    // === Conversão para DTOs ===
+
+    private PacienteDTO toDTO(Paciente paciente) {
+        PacienteDTO dto = new PacienteDTO();
+        dto.setId(paciente.getId());
+        dto.setCpf(paciente.getCpf());
+        dto.setNome(paciente.getNome());
+        dto.setEmail(paciente.getEmail());
+        dto.setEndereco(paciente.getEndereco());
+        dto.setSaldo(paciente.getSaldoPontos());
+
+        // Não carrega transações por padrão para evitar recursão
+        return dto;
+    }
+
+    private TransacaoPontosDTO toTransacaoDTO(TransacaoPontos t) {
+        TransacaoPontosDTO dto = new TransacaoPontosDTO();
+        dto.setOrigem(t.getOrigem());
+        dto.setTipo(t.getTipo());
+        dto.setData(t.getData());
+        dto.setValor(t.getQuantidade());
+        return dto;
     }
 }

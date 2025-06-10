@@ -4,23 +4,28 @@ services:
   api-gateway:
     build:
       context: ./api-gateway
+    container_name: api-gateway
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
       - AUTH_SERVICE_URL=http://auth-service:8081
       - USER_SERVICE_URL=http://user-service:8082
+      - APPOINTMENT_SERVICE_URL=http://appointment-service:8083
       - JWT_SECRET=secreto123
     depends_on:
       - auth-service
       - user-service
+      - appointment-service
     networks:
       - backend
+    restart: always
 
   # === Auth Service ===
   auth-service:
     build:
       context: ./auth-service
+    container_name: auth-service
     ports:
       - "8081:8081"
     environment:
@@ -31,10 +36,12 @@ services:
       - auth-db
     networks:
       - backend
+    restart: always
 
-  # === Banco de dados do Auth ===
+  # === Banco de dados do Auth Service ===
   auth-db:
     image: postgres:17
+    container_name: auth-db
     restart: always
     environment:
       POSTGRES_DB: auth
@@ -51,20 +58,23 @@ services:
   user-service:
     build:
       context: ./user-service
+    container_name: user-service
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://sgh-users:5432/sgh-users
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://sgh-users-db:5432/sgh-users
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=admin
     depends_on:
-      - sgh-users
+      - sgh-users-db
     networks:
       - backend
+    restart: always
 
   # === Banco de dados do User Service ===
-  sgh-users:
+  sgh-users-db:
     image: postgres:17
+    container_name: sgh-users-db
     restart: always
     environment:
       POSTGRES_DB: sgh-users
@@ -77,49 +87,44 @@ services:
     networks:
       - backend
 
+  # === Appointment Service ===
+  appointment-service:
+    build:
+      context: ./appointment-service
+    container_name: appointment-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://appointment-db:5432/appointments
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - appointment-db
+    networks:
+      - backend
+    restart: always
+
+  # === Banco de dados do Appointment Service ===
+  appointment-db:
+    image: postgres:17
+    container_name: appointment-db
+    restart: always
+    environment:
+      POSTGRES_DB: appointments
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5435:5432"
+    volumes:
+      - appointment_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
 volumes:
   auth_data:
   user_data:
+  appointment_data:
 
 networks:
   backend:
     driver: bridge
-
-  # === Microsserviço Appointment Service ===
-  appointment-service:
-    build:
-      context: ./appointment-service   # Caminho onde está o Dockerfile e o projeto do appointment-service
-    ports:
-      - "8083:8083"                    # Mapeia a porta 8083 do container para a 8083 do host
-    environment:
-      # Variáveis de ambiente para configurar o acesso ao banco de dados PostgreSQL
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://appointment-db:5432/appointments  # URL de conexão com o banco
-      - SPRING_DATASOURCE_USERNAME=admin   # Usuário do banco de dados
-      - SPRING_DATASOURCE_PASSWORD=admin   # Senha do banco de dados
-    depends_on:
-      - appointment-db               # Garante que o banco de dados esteja disponível antes de iniciar o serviço
-    networks:
-      - backend                      # Define a rede interna em que o serviço será executado (comunicação entre containers)
-
-  # === Banco de dados do Appointment Service ===
-  appointment-db:
-    image: postgres:17              # Imagem oficial do PostgreSQL na versão 17
-    container_name: appointment-db # Nome fixo para facilitar a referência entre containers
-    restart: always                 # Reinicia o container automaticamente em caso de falha
-    environment:
-      POSTGRES_DB: appointments     # Nome do banco de dados a ser criado automaticamente
-      POSTGRES_USER: admin          # Usuário administrador
-      POSTGRES_PASSWORD: admin      # Senha do usuário
-    ports:
-      - "5435:5432"                 # Porta externa 5435 (host) conectando-se à porta interna padrão 5432 (PostgreSQL)
-    networks:
-      - backend                     # Rede compartilhada entre serviços (como o user-service, auth-service etc.)
-
-  # === Banco de dados do User Service ===
-  sgh-users:
-    image: postgres:17
-    restart: always
-    environment:
-      POSTGRES_DB: sgh-users       # Nome do banco de dados usado pelo microsserviço de usuários
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin

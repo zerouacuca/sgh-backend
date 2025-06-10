@@ -1,8 +1,11 @@
-package main.java.com.example.appointment_service.model;
+package com.example.appointment_service.model;
+
 
 import java.math.BigDecimal;
 
-public @Entity
+import jakarta.persistence.*;
+
+@Entity
 public class Agendamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

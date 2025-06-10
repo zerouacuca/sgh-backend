@@ -73,4 +73,56 @@ router.get('/users/:id/transacoes', async (req, res) => {
   }
 });
 
+const APPOINTMENT_SERVICE_URL = process.env.APPOINTMENT_SERVICE_URL;
+
+// === [POST] /consultas — Criar consulta ===
+router.post('/consultas', async (req, res) => {
+  try {
+    const response = await axios.post(`${APPOINTMENT_SERVICE_URL}/consultas`, req.body);
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Erro ao criar consulta' });
+  }
+});
+
+// === [GET] /consultas — Listar todas as consultas ===
+router.get('/consultas', async (req, res) => {
+  try {
+    const response = await axios.get(`${APPOINTMENT_SERVICE_URL}/consultas`);
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Erro ao listar consultas' });
+  }
+});
+
+// === [GET] /consultas/:id — Buscar consulta por ID ===
+router.get('/consultas/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`${APPOINTMENT_SERVICE_URL}/consultas/${req.params.id}`);
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Erro ao buscar consulta' });
+  }
+});
+
+// === [PUT] /consultas/:id — Atualizar consulta ===
+router.put('/consultas/:id', async (req, res) => {
+  try {
+    const response = await axios.put(`${APPOINTMENT_SERVICE_URL}/consultas/${req.params.id}`, req.body);
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Erro ao atualizar consulta' });
+  }
+});
+
+// === [DELETE] /consultas/:id — Deletar consulta ===
+router.delete('/consultas/:id', async (req, res) => {
+  try {
+    const response = await axios.delete(`${APPOINTMENT_SERVICE_URL}/consultas/${req.params.id}`);
+    res.status(response.status).send(); // No content
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Erro ao deletar consulta' });
+  }
+});
+
 module.exports = router;

@@ -1,28 +1,21 @@
-package com.example.appointment_service.model;
+package com.example.appointment_service.dto;
 
-import jakarta.persistence.*;
+import com.example.appointment_service.model.StatusConsulta;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Consulta {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ConsultaResponseDTO {
     private Long id;
-
     private String especialidade;
     private String medico;
     private LocalDateTime dataHora;
     private BigDecimal valor;
     private int vagas;
-
-    @Enumerated(EnumType.STRING)
-    private StatusConsulta status = StatusConsulta.DISPONIVEL;
+    private StatusConsulta status;
 }

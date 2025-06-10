@@ -1,10 +1,12 @@
-public package com.example.appointment_service.service;
+package com.example.appointment_service.service;
 
 import com.example.appointment_service.model.Consulta;
+import com.example.appointment_service.model.StatusConsulta;
 import com.example.appointment_service.repository.ConsultaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +43,19 @@ public class ConsultaService {
             return repository.save(consulta);
         }).orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
     }
-}
- {
-    
+
+    // 🔍 Buscar por especialidade com data futura
+    public List<Consulta> buscarFuturasPorEspecialidade(String especialidade) {
+        return repository.findByEspecialidadeIgnoreCaseAndDataHoraAfter(especialidade, LocalDateTime.now());
+    }
+
+    // 🔍 Buscar por médico com data futura
+    public List<Consulta> buscarFuturasPorMedico(String medico) {
+        return repository.findByMedicoIgnoreCaseAndDataHoraAfter(medico, LocalDateTime.now());
+    }
+
+    // 🔍 Buscar todas futuras e com status DISPONIVEL
+    public List<Consulta> buscarDisponiveisFuturas() {
+        return repository.findByDataHoraAfterAndStatus(LocalDateTime.now(), StatusConsulta.DISPONIVEL);
+    }
 }

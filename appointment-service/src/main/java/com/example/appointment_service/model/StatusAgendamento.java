@@ -1,5 +1,10 @@
 package com.example.appointment_service.model;
 
 public enum StatusAgendamento {
-    CRIADO, CHECKIN, COMPARECEU, REALIZADO, FALTOU, CANCELADO
+    CRIADO,
+    CHECK_IN,
+    COMPARECEU,
+    REALIZADO,
+    FALTOU,
+    CANCELADO
 }

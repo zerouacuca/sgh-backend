@@ -1,18 +1,48 @@
-const jwt = require('jsonwebtoken'); // Biblioteca para trabalhar com JWT
+const jwt = require('jsonwebtoken');
 
-// Middleware para proteger rotas
-module.exports = function (req, res, next) {
-  const token = req.headers['authorization']; // Lê o header Authorization
+// Decodifica o segredo Base64 uma vez ao carregar o middleware
+const jwtSecret = Buffer.from(process.env.JWT_SECRET, 'base64');
 
-  if (!token) return res.status(401).json({ message: 'Token ausente' });
+function authMiddleware(requiredRole) {
+  return (req, res, next) => {
+    const authHeader = req.headers['authorization'];
 
-  try {
-    // Remove "Bearer " do início do token e valida
-    const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
+    if (!authHeader) {
+      console.log("❌ Token não fornecido");
+      return res.status(401).json({ error: 'Token não fornecido' });
+    }
 
-    req.user = decoded; // Salva os dados do token no request para uso posterior
-    next(); // Passa para a próxima função (rota)
-  } catch (err) {
-    return res.status(403).json({ message: 'Token inválido' }); // Token incorreto
-  }
-};
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      console.log("❌ Token malformado");
+      return res.status(401).json({ error: 'Token inválido' });
+    }
+
+    console.log("🔐 Token recebido:", token);
+    console.log("🧪 JWT_SECRET (decodificado) usado:", jwtSecret.toString('utf-8'));
+
+    jwt.verify(token, jwtSecret, (err, decoded) => {
+      if (err) {
+        console.log("❌ Erro ao verificar token:", err.message);
+        return res.status(403).json({ error: 'Token inválido ou expirado' });
+      }
+
+      req.user = decoded;
+
+      if (requiredRole) {
+        console.log("🔍 Verificando role:", requiredRole);
+        console.log("📦 Roles no token:", req.user.auth);
+
+        if (!req.user.auth?.includes(`ROLE_${requiredRole.toUpperCase()}`)) {
+          console.log("⛔ Permissão negada para o tipo:", requiredRole);
+          return res.status(403).json({ error: 'Permissão negada' });
+        }
+      }
+
+      console.log("✅ Token válido. Permissão concedida.");
+      next();
+    });
+  };
+}
+
+module.exports = authMiddleware;

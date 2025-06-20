@@ -9,4 +9,5 @@ app.use('/', gatewayRoutes); // Todas as rotas estão no arquivo de rotas import
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`API Gateway rodando na porta ${PORT}`); // Inicia o servidor
+  console.log(process.env.JWT_SECRET); // Exibe o segredo JWT para depuração
 });

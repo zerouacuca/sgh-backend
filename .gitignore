@@ -14,7 +14,7 @@ target/
 *.iml
 
 # Docker
-**/.env
+## **/.env
 **/docker-compose.override.yml
 
 # Sistema operacional

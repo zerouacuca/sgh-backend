@@ -90,8 +90,8 @@ router.post('/consultas', authMiddleware('FUNCIONARIO'), async (req, res) => {
   }
 });
 
-// === [GET] /consultas — Listar consultas (FUNCIONARIO) ===
-router.get('/consultas', authMiddleware('FUNCIONARIO'), async (req, res) => {
+// === [GET] /consultas — Listar consultas ===
+router.get('/consultas', authMiddleware(), async (req, res) => {
   try {
     const response = await axios.get(`${APPOINTMENT_SERVICE_URL}/consultas`);
     res.status(response.status).json(response.data);
@@ -100,7 +100,7 @@ router.get('/consultas', authMiddleware('FUNCIONARIO'), async (req, res) => {
   }
 });
 
-// === [GET] /consultas/:id — Buscar consulta por ID (qualquer autenticado) ===
+// === [GET] /consultas/:id — Buscar consulta por ID ===
 router.get('/consultas/:id', authMiddleware(), async (req, res) => {
   try {
     const response = await axios.get(`${APPOINTMENT_SERVICE_URL}/consultas/${req.params.id}`);

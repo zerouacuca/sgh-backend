@@ -9,12 +9,12 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
-      - AUTH_SERVICE_URL=http://auth-service:8081
+      - AUTH_SERVICE_URL=http://autenticacao:8081
       - USER_SERVICE_URL=http://user-service:8082
       - APPOINTMENT_SERVICE_URL=http://appointment-service:8083
-      - JWT_SECRET=secreto123
+      - JWT_SECRET=4tFPD3m6nj6UA1Fo2M/fe0fMdCZlFIW38NsphJRpEdo=
     depends_on:
-      - auth-service
+      - autenticacao
       - user-service
       - appointment-service
     networks:
@@ -22,10 +22,10 @@ services:
     restart: always
 
   # === Auth Service ===
-  auth-service:
+  autenticacao:
     build:
-      context: ./auth-service
-    container_name: auth-service
+      context: ./autenticacao
+    container_name: autenticacao
     ports:
       - "8081:8081"
     environment:

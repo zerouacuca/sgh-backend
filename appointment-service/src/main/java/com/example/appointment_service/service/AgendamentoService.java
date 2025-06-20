@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,12 +60,20 @@ public class AgendamentoService {
                 .build();
     }
 
-    /**
-     * Lista todos os agendamentos
-     */
-    public List<Agendamento> listarTodos() {
-        return agendamentoRepository.findAll();
+    public List<AgendamentoResponseDTO> listarTodosDTO() {
+        List<Agendamento> agendamentos = agendamentoRepository.findAll();
+
+        return agendamentos.stream().map(a -> AgendamentoResponseDTO.builder()
+                .id(a.getId())
+                .codigo(a.getCodigo())
+                .consultaId(a.getConsulta() != null ? a.getConsulta().getId() : null)
+                .pacienteId(a.getPacienteId())
+                .valorPago(a.getValorPago())
+                .status(a.getStatus())
+                .build()
+        ).collect(Collectors.toList());
     }
+
 
     /**
      * Cancela um agendamento (pelo paciente).

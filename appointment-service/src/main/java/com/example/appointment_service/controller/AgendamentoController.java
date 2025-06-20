@@ -24,8 +24,8 @@ public class AgendamentoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Agendamento>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodosDTO());
     }
 
     @PostMapping("/{id}/checkin")

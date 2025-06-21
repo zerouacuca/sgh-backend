@@ -17,6 +17,34 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
+// === BUSCAR ID POR EMAIL ===
+router.post('/users/id-por-email', authMiddleware(),async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Campo email é obrigatório' });
+  }
+
+  try {
+    // Chama o User Service para buscar o ID pelo email
+    const response = await axios.get(`${USER_SERVICE_URL}/users/id-por-email`, {
+      params: { email }
+    });
+
+    // response.data é o id (Long) retornado pelo User Service
+    const id = response.data;
+
+    res.json({ id });
+
+  } catch (error) {
+    console.error('Erro ao buscar id por email:', error.message);
+
+    // Passa o status e mensagem de erro do User Service, se houver
+    res.status(error.response?.status || 500)
+       .json(error.response?.data || { error: 'Erro ao buscar id do usuário' });
+  }
+});
+
 // === ROTA PÚBLICA: CADASTRAR USUÁRIO ===
 router.post('/auth/cadastrar', async (req, res) => {
   try {

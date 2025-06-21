@@ -23,6 +23,12 @@ public class PacienteController {
         return ResponseEntity.ok(pacienteService.listarPacientes());
     }
 
+    @GetMapping("/id-por-email")
+    public ResponseEntity<Long> buscarIdPorEmail(@RequestParam String email) {
+        Long id = pacienteService.buscarIdPorEmail(email);
+        return ResponseEntity.ok(id);
+    }
+
     // [POST] /users
     @PostMapping
     public ResponseEntity<Paciente> criarPaciente(@RequestBody Paciente paciente) {

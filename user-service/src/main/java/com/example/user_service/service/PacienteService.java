@@ -40,6 +40,13 @@ public class PacienteService {
         return pacienteRepository.findById(id);
     }
 
+    public Long buscarIdPorEmail(String email) {
+        return pacienteRepository.findByEmail(email)
+            .map(Paciente::getId)
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado com e-mail: " + email));
+    }
+
+
     public Paciente registrarCompra(Long pacienteId, Double valorReais, Integer pontos) {
         Paciente paciente = pacienteRepository.findById(pacienteId)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
